@@ -13,10 +13,13 @@ const state = {
   coins: [],
   watchlist: JSON.parse(localStorage.getItem('pulsewatchlist') || '[]'),
   selectedCoin: 'bitcoin',
-  portfolio: JSON.parse(localStorage.getItem('pulseportfolio') || JSON.stringify({
-    cash: 50000,
-    holdings: {}
-  }))
+  portfolio: JSON.parse(
+    localStorage.getItem('pulseportfolio') ||
+      JSON.stringify({
+        cash: 50000,
+        holdings: {}
+      })
+  )
 };
 
 const elements = {
@@ -53,8 +56,6 @@ const formatCompact = (value) =>
     maximumFractionDigits: 2
   }).format(value);
 
-const getChangeClass = (value) => (value >= 0 ? 'positive' : 'negative');
-
 const setWatchlistStorage = () => {
   localStorage.setItem('pulsewatchlist', JSON.stringify(state.watchlist));
 };
@@ -78,12 +79,14 @@ const renderStats = () => {
 
   const totalMarketCap = state.coins.reduce((sum, coin) => sum + (coin.market_cap || 0), 0);
   const totalVolume = state.coins.reduce((sum, coin) => sum + (coin.total_volume || 0), 0);
-  const avgChange = state.coins.reduce((sum, coin) => sum + (coin.price_change_percentage_24h || 0), 0) / state.coins.length;
+  const avgChange =
+    state.coins.reduce((sum, coin) => sum + (coin.price_change_percentage_24h || 0), 0) /
+    state.coins.length;
 
   const cards = [
     {
       label: 'Market cap',
-      value: formatCurrency(totalMarketCap),
+      value: `$${formatCompact(totalMarketCap)}`,
       delta: `${avgChange >= 0 ? '+' : ''}${avgChange.toFixed(2)}%`,
       positive: avgChange >= 0
     },
@@ -94,15 +97,15 @@ const renderStats = () => {
       positive: (state.coins[0]?.price_change_percentage_24h || 0) >= 0
     },
     {
-      label: 'BTC dominance',
-      value: '46.2%',
-      delta: '+1.1%',
+      label: 'Signal mesh',
+      value: '94.2%',
+      delta: '+3.8%',
       positive: true
     },
     {
-      label: 'Fear & Greed',
-      value: '72 / 100',
-      delta: 'Bullish',
+      label: 'Chip load',
+      value: '68%',
+      delta: 'Stable',
       positive: true
     }
   ];
@@ -133,7 +136,7 @@ const renderMarketTable = () => {
         <tr>
           <td>
             <div class="coin-cell">
-              <span class="coin-icon" style="background: linear-gradient(135deg, ${coin.color || '#fbbf24'}, #38bdf8);">${coin.symbol.slice(0, 1).toUpperCase()}</span>
+              <span class="coin-icon" style="background: linear-gradient(135deg, ${coin.color || '#5ef2d0'}, #4dd4ff);">${coin.symbol.slice(0, 1).toUpperCase()}</span>
               <div class="coin-name">
                 <span>${coin.name}</span>
                 <small>${coin.symbol.toUpperCase()}</small>
@@ -167,10 +170,14 @@ const renderMarketTable = () => {
 
   elements.marketTable.querySelectorAll('tr').forEach((row) => {
     row.addEventListener('click', (event) => {
-      const coinId = event.target.closest('tr')?.querySelector('.watch-btn')?.dataset.id;
-      if (coinId) {
-        state.selectedCoin = coinId;
-        renderChart();
+      const btn = event.target.closest('.watch-btn');
+      if (!btn) {
+        const coinId = event.currentTarget.querySelector('.watch-btn')?.dataset.id;
+        if (coinId) {
+          state.selectedCoin = coinId;
+          renderTradeOptions();
+          renderChart();
+        }
       }
     });
   });
@@ -193,7 +200,7 @@ const renderWatchlist = () => {
       (coin) => `
         <div class="watch-item" data-id="${coin.id}">
           <div class="left">
-            <span class="coin-icon" style="background: linear-gradient(135deg, ${coin.color || '#fbbf24'}, #38bdf8);">${coin.symbol.slice(0, 1).toUpperCase()}</span>
+            <span class="coin-icon" style="background: linear-gradient(135deg, ${coin.color || '#5ef2d0'}, #4dd4ff);">${coin.symbol.slice(0, 1).toUpperCase()}</span>
             <div class="item-meta">
               <strong>${coin.name}</strong>
               <small>${coin.symbol.toUpperCase()}</small>
@@ -213,6 +220,7 @@ const renderWatchlist = () => {
   elements.watchlist.querySelectorAll('.watch-item').forEach((item) => {
     item.addEventListener('click', () => {
       state.selectedCoin = item.dataset.id;
+      renderTradeOptions();
       renderChart();
     });
   });
@@ -243,7 +251,7 @@ const renderPortfolio = () => {
   elements.totalPortfolio.textContent = formatCurrency(total);
 
   if (!holdings.length) {
-    elements.holdingsList.innerHTML = '<div class="empty-state">No open positions yet. Buy your first crypto asset.</div>';
+    elements.holdingsList.innerHTML = '<div class="empty-state">No open positions yet. Build your next move.</div>';
     return;
   }
 
@@ -255,7 +263,7 @@ const renderPortfolio = () => {
       return `
         <div class="holding-item">
           <div class="left">
-            <span class="coin-icon" style="background: linear-gradient(135deg, ${coin.color || '#fbbf24'}, #38bdf8);">${coin.symbol.slice(0, 1).toUpperCase()}</span>
+            <span class="coin-icon" style="background: linear-gradient(135deg, ${coin.color || '#5ef2d0'}, #4dd4ff);">${coin.symbol.slice(0, 1).toUpperCase()}</span>
             <div class="item-meta">
               <strong>${coin.name}</strong>
               <small>${Number(qty).toFixed(4)} ${coin.symbol.toUpperCase()}</small>
@@ -319,7 +327,7 @@ const renderChart = () => {
     else ctx.lineTo(x, y);
   });
 
-  ctx.strokeStyle = '#2dd4bf';
+  ctx.strokeStyle = '#5ef2d0';
   ctx.lineWidth = 3;
   ctx.stroke();
 
@@ -406,7 +414,7 @@ const loadMarketData = async () => {
     const data = await response.json();
     state.coins = data.map((coin) => ({
       ...coin,
-      color: coin.symbol === 'btc' ? '#fbbf24' : coin.symbol === 'eth' ? '#a78bfa' : '#38bdf8'
+      color: coin.symbol === 'btc' ? '#f8d76a' : coin.symbol === 'eth' ? '#8b5cf6' : '#4dd4ff'
     }));
 
     if (!state.selectedCoin && state.coins.length) {
@@ -434,7 +442,7 @@ const loadMarketData = async () => {
         total_volume: 43650000000,
         market_cap: 1220000000000,
         sparkline_in_7d: { price: [54000, 56000, 56500, 57000, 58000, 59200, 61000] },
-        color: '#fbbf24'
+        color: '#f8d76a'
       }
     ];
     ensureDefaultWatchlist();
