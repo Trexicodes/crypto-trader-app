@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PulseTrade | Crypto Trader Dashboard</title>
+    <meta
+      name="description"
+      content="PulseTrade is a crypto trader dashboard for monitoring markets, portfolio performance, and basic trade simulation."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <div class="brand-mark">₿</div>
+          <div>
+            <p class="eyebrow">Trader Console</p>
+            <h1>PulseTrade</h1>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="ghost-btn" id="refresh-btn">Refresh</button>
+          <div class="user-pill">
+            <span class="status-dot"></span>
+            Live Market
+          </div>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <section class="stats-grid" id="stats-grid"></section>
+
+        <section class="content-grid">
+          <article class="panel market-panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-label">Market overview</p>
+                <h2>Top movers</h2>
+              </div>
+              <div class="panel-actions">
+                <input
+                  id="search-input"
+                  type="search"
+                  placeholder="Search crypto"
+                  aria-label="Search crypto"
+                />
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Coin</th>
+                    <th>Price</th>
+                    <th>1H</th>
+                    <th>24H</th>
+                    <th>7D</th>
+                    <th>Volume</th>
+                    <th>Watch</th>
+                  </tr>
+                </thead>
+                <tbody id="market-table"></tbody>
+              </table>
+            </div>
+          </article>
+
+          <aside class="panel chart-panel">
+            <div class="panel-header compact">
+              <div>
+                <p class="panel-label">Selected asset</p>
+                <h2 id="chart-title">Bitcoin</h2>
+              </div>
+              <div class="chip" id="chart-price"></div>
+            </div>
+            <div class="chart-area">
+              <canvas id="price-chart" width="420" height="220"></canvas>
+            </div>
+            <div class="chart-stats" id="chart-metrics"></div>
+          </aside>
+        </section>
+
+        <section class="lower-grid">
+          <article class="panel watchlist-panel">
+            <div class="panel-header compact">
+              <div>
+                <p class="panel-label">Portfolio radar</p>
+                <h2>Watchlist</h2>
+              </div>
+            </div>
+            <div id="watchlist" class="watchlist"></div>
+          </article>
+
+          <article class="panel trade-panel">
+            <div class="panel-header compact">
+              <div>
+                <p class="panel-label">Execution desk</p>
+                <h2>Trade</h2>
+              </div>
+            </div>
+
+            <form id="trade-form">
+              <label>
+                Asset
+                <select id="trade-coin" aria-label="Select asset"></select>
+              </label>
+
+              <label>
+                Order type
+                <select id="trade-side">
+                  <option value="buy">Buy</option>
+                  <option value="sell">Sell</option>
+                </select>
+              </label>
+
+              <label>
+                Quantity
+                <input id="trade-qty" type="number" min="0.0001" step="0.0001" value="0.5" />
+              </label>
+
+              <div class="order-summary">
+                <span>Est. value</span>
+                <strong id="estimated-value">$0.00</strong>
+              </div>
+
+              <button class="primary-btn" type="submit">Confirm trade</button>
+            </form>
+          </article>
+
+          <article class="panel portfolio-panel">
+            <div class="panel-header compact">
+              <div>
+                <p class="panel-label">Account summary</p>
+                <h2>Portfolio</h2>
+              </div>
+            </div>
+
+            <div class="portfolio-summary">
+              <div>
+                <span>Cash</span>
+                <strong id="cash-balance">$0.00</strong>
+              </div>
+              <div>
+                <span>Holdings</span>
+                <strong id="holdings-value">$0.00</strong>
+              </div>
+              <div>
+                <span>Total</span>
+                <strong id="total-portfolio">$0.00</strong>
+              </div>
+            </div>
+
+            <div id="holdings-list" class="holdings-list"></div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
